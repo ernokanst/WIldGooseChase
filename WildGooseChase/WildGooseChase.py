@@ -29,6 +29,11 @@ class Goose(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 0
 
+    def caught(self, coords):
+        global count
+        if self.rect.collidepoint(coords):
+            count += 1
+
 
 class Cursor(pygame.sprite.Sprite):
     def __init__(self, group):
@@ -66,6 +71,7 @@ goose = Goose(all_sprites, goose_image)
 cursor = Cursor(all_sprites)
 goose_move = 15
 new_coords = 30
+count = 0
 new_x = 0
 new_y = 0
 FPS = 50
@@ -97,7 +103,19 @@ while running:
             new_y = random.randint(0, 600)
         elif event.type == pygame.MOUSEMOTION:
             cursor.movement(event.pos)
-    screen.fill((255, 255, 255))
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            goose.caught(event.pos)
+    fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font('data/PTMono.ttc', 30)
+    text_coord = 10
+    string_rendered = font.render('Попаданий: ' + str(count), 1,
+                                  pygame.Color('white'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = text_coord
+    intro_rect.x = 575
+    text_coord += intro_rect.height
+    screen.blit(string_rendered, intro_rect)
     clock.tick(FPS)
     all_sprites.draw(screen)
     pygame.display.flip()
