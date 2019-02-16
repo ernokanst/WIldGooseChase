@@ -21,6 +21,25 @@ def load_image(name, colorkey=None):
     return image
 
 
+class Goose(pygame.sprite.Sprite):
+    def __init__(self, group, image):
+        super().__init__(group)
+        self.image = load_image(image)
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+
+class Cursor(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = load_image('cursor.png')
+        self.rect = self.image.get_rect()
+
+    def movement(self, coords):
+        self.rect.topleft = coords
+
+
 class Dialog_Goose(QWidget):
     def __init__(self):
         super().__init__()
@@ -33,22 +52,18 @@ class Dialog_Goose(QWidget):
         return i
 
 
-goose = 'goose.png'
+goose_image = 'goose.png'
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    goose = Dialog_Goose()
-    goose = goose.run()
+    goose_image = Dialog_Goose()
+    goose_image = goose_image.run()
 pygame.init()
 size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
 screen.fill((255, 255, 255))
 all_sprites = pygame.sprite.Group()
-sprite_image = load_image(goose)
-sprite = pygame.sprite.Sprite(all_sprites)
-sprite.image = sprite_image
-sprite.rect = sprite.image.get_rect()
-sprite.rect.x = 0
-sprite.rect.y = 0
+goose = Goose(all_sprites, goose_image)
+cursor = Cursor(all_sprites)
 goose_move = 15
 new_coords = 30
 new_x = 0
@@ -57,28 +72,31 @@ FPS = 50
 clock = pygame.time.Clock()
 pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 100)
+pygame.mouse.set_visible(False)
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == goose_move:
-            if new_x > sprite.rect.x and new_y > sprite.rect.y:
-                sprite.rect.x += 10
-                sprite.rect.y += 10
-            elif new_x > sprite.rect.x and new_y < sprite.rect.y:
-                sprite.rect.x += 10
-                sprite.rect.y -= 10
-            elif new_x < sprite.rect.x and new_y > sprite.rect.y:
-                sprite.rect.x -= 10
-                sprite.rect.y += 10
-            elif new_x < sprite.rect.x and new_y < sprite.rect.y:
-                sprite.rect.x -= 10
-                sprite.rect.y -= 10
+            if new_x > goose.rect.x and new_y > goose.rect.y:
+                goose.rect.x += 5
+                goose.rect.y += 5
+            elif new_x > goose.rect.x and new_y < goose.rect.y:
+                goose.rect.x += 5
+                goose.rect.y -= 5
+            elif new_x < goose.rect.x and new_y > goose.rect.y:
+                goose.rect.x -= 5
+                goose.rect.y += 5
+            elif new_x < goose.rect.x and new_y < goose.rect.y:
+                goose.rect.x -= 5
+                goose.rect.y -= 5
             else:
                 new_x = random.randint(0, 800)
                 new_y = random.randint(0, 600)
         elif event.type == new_coords:
             new_x = random.randint(0, 800)
             new_y = random.randint(0, 600)
+        elif event.type == pygame.MOUSEMOTION:
+            cursor.movement(event.pos)
     screen.fill((255, 255, 255))
     clock.tick(FPS)
     all_sprites.draw(screen)
