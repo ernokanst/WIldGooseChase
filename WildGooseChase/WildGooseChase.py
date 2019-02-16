@@ -69,16 +69,21 @@ screen.fill((255, 255, 255))
 all_sprites = pygame.sprite.Group()
 goose = Goose(all_sprites, goose_image)
 cursor = Cursor(all_sprites)
-goose_move = 15
-new_coords = 30
+goose_move = 1
+new_coords = 2
+honking = 3
 count = 0
 new_x = 0
 new_y = 0
 FPS = 50
 clock = pygame.time.Clock()
+honk = pygame.mixer.Sound('data/Honk.wav')
 pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 100)
+pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
+pygame.mixer.music.load('data/Music.mp3')
+pygame.mixer.music.play(-1)
 running = True
 while running:
     for event in pygame.event.get():
@@ -105,6 +110,8 @@ while running:
             cursor.movement(event.pos)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             goose.caught(event.pos)
+        elif event.type == honking:
+            honk.play()
     fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font('data/PTMono.ttc', 30)
@@ -113,7 +120,7 @@ while running:
                                   pygame.Color('white'))
     intro_rect = string_rendered.get_rect()
     intro_rect.top = text_coord
-    intro_rect.x = 575
+    intro_rect.x = 10
     text_coord += intro_rect.height
     screen.blit(string_rendered, intro_rect)
     clock.tick(FPS)
