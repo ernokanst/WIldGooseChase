@@ -27,9 +27,9 @@ class Dialog_Goose(QWidget):
 
     def run(self):
         i, okBtnPressed = QInputDialog.getItem(self, "Выбор гуся",
-	                                       "Выберите гуся",
-	                                       ("goose.png", "goose-2.png",
-	                                        "goose-3.png"), 0, False)
+                                               "Выберите гуся",
+                                               ("goose.png", "goose-2.png",
+                                                "goose-3.png"), 0, False)
         return i
 
 
@@ -49,10 +49,34 @@ sprite.image = sprite_image
 sprite.rect = sprite.image.get_rect()
 sprite.rect.x = 0
 sprite.rect.y = 0
+goose_move = 15
+new_coords = 30
+new_x = 0
+new_y = 0
+FPS = 50
+clock = pygame.time.Clock()
+pygame.time.set_timer(goose_move, 1)
+pygame.time.set_timer(new_coords, 100)
 running = True
 while running:
-	for event in pygame.event.get():
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			running = False
-	all_sprites.draw(screen)
-	pygame.display.flip()
+    for event in pygame.event.get():
+        if event.type == goose_move:
+            if new_x > sprite.rect.x and new_y > sprite.rect.y:
+                sprite.rect.x += 10
+                sprite.rect.y += 10
+            elif new_x > sprite.rect.x and new_y < sprite.rect.y:
+                sprite.rect.x += 10
+                sprite.rect.y -= 10
+            elif new_x < sprite.rect.x and new_y > sprite.rect.y:
+                sprite.rect.x -= 10
+                sprite.rect.y += 10
+            elif new_x < sprite.rect.x and new_y < sprite.rect.y:
+                sprite.rect.x -= 10
+                sprite.rect.y -= 10
+        elif event.type == new_coords:
+            new_x = random.randint(-250, 600)
+            new_y = random.randint(-250, 400)
+    screen.fill((255, 255, 255))
+    clock.tick(FPS)
+    all_sprites.draw(screen)
+    pygame.display.flip()
