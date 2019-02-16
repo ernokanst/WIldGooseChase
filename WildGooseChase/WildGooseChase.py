@@ -55,7 +55,7 @@ new_x = 0
 new_y = 0
 FPS = 50
 clock = pygame.time.Clock()
-pygame.time.set_timer(goose_move, 1)
+pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 100)
 running = True
 while running:
@@ -73,9 +73,12 @@ while running:
             elif new_x < sprite.rect.x and new_y < sprite.rect.y:
                 sprite.rect.x -= 10
                 sprite.rect.y -= 10
+            else:
+                new_x = random.randint(0, 800)
+                new_y = random.randint(0, 600)
         elif event.type == new_coords:
-            new_x = random.randint(-250, 600)
-            new_y = random.randint(-250, 400)
+            new_x = random.randint(0, 800)
+            new_y = random.randint(0, 600)
     screen.fill((255, 255, 255))
     clock.tick(FPS)
     all_sprites.draw(screen)
