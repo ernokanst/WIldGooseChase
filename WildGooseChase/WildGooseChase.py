@@ -37,6 +37,39 @@ def terminate():
     sys.exit()
 
 
+def intro_screen():
+    global goose
+    global FPS
+    global clock
+    intro_text = ["Wild Goose Chase", "Дмитрий Канский"]
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                return
+        goose.rect.x += 10
+        goose.rect.y += 10
+        if goose.rect.x == 400:
+            return
+        fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
+        screen.blit(fon, (0, 0))
+        font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 60)
+        text_coord = 10
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('white'))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = text_coord
+            intro_rect.x = 10
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+            font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
+        all_sprites.draw(screen)
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def teaser_screen():
     intro_text = ["Привет, я – гусь!",
                   "Хочешь попробовать поймать меня?",
@@ -70,7 +103,7 @@ def start_screen():
                   "Кликай сачком по гусю и набирай очки.", " ",
                   "Через каждые 10 попаданий", "ты выходишь на новый уровень,",
                   "и гусь ускоряется.",
-                  " ", "Для продолжения кликните мышью"]
+                  " ", "Для продолжения кликни мышью"]
 
     fon = pygame.transform.scale(load_image('start.jpg'), (800, 600))
     screen.blit(fon, (0, 0))
@@ -147,7 +180,6 @@ screen = pygame.display.set_mode(size)
 screen.fill((255, 255, 255))
 all_sprites = pygame.sprite.Group()
 goose = Goose(all_sprites, goose_image)
-cursor = Cursor(all_sprites)
 goose_move = 1
 new_coords = 2
 honking = 3
@@ -165,8 +197,10 @@ pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
 levelup = pygame.mixer.Sound(os.path.join('data', 'LevelUp.wav'))
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
+intro_screen()
 teaser_screen()
 start_screen()
+cursor = Cursor(all_sprites)
 startscreentime = pygame.time.get_ticks()
 pygame.mixer.music.play(-1)
 running = True
