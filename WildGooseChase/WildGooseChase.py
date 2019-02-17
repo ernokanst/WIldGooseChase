@@ -21,6 +21,16 @@ def load_image(name, colorkey=None):
     return image
 
 
+def game_time():
+    gametime = pygame.time.get_ticks()
+    gametime = gametime // 1000
+    minutes = str(gametime // 60)
+    seconds = str(gametime % 60)
+    if len(seconds) == 1:
+        seconds = '0' + seconds
+    return minutes + ':' + seconds
+
+
 class Goose(pygame.sprite.Sprite):
     def __init__(self, group, image):
         super().__init__(group)
@@ -32,9 +42,13 @@ class Goose(pygame.sprite.Sprite):
     def caught(self, coords):
         global count
         global score
+        global levelup
         if self.rect.collidepoint(coords):
-            score.play()
             count += 1
+        if count % 10 != 0:
+            score.play()
+        else:
+            levelup.play()
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -75,6 +89,7 @@ goose_move = 1
 new_coords = 2
 honking = 3
 count = 0
+level = 1
 new_x = 0
 new_y = 0
 FPS = 50
@@ -85,6 +100,7 @@ pygame.time.set_timer(new_coords, 500)
 pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
+levelup = os.path.join('data', 'LevelUp.wav')
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
 pygame.mixer.music.play(-1)
 running = True
@@ -92,17 +108,17 @@ while running:
     for event in pygame.event.get():
         if event.type == goose_move:
             if new_x > goose.rect.x and new_y > goose.rect.y:
-                goose.rect.x += 5
-                goose.rect.y += 5
+                goose.rect.x += level
+                goose.rect.y += level
             elif new_x > goose.rect.x and new_y < goose.rect.y:
-                goose.rect.x += 5
-                goose.rect.y -= 5
+                goose.rect.x += level
+                goose.rect.y -= level
             elif new_x < goose.rect.x and new_y > goose.rect.y:
-                goose.rect.x -= 5
-                goose.rect.y += 5
+                goose.rect.x -= level
+                goose.rect.y += level
             elif new_x < goose.rect.x and new_y < goose.rect.y:
-                goose.rect.x -= 5
-                goose.rect.y -= 5
+                goose.rect.x -= level
+                goose.rect.y -= level
             else:
                 new_x = random.randint(-100, 800)
                 new_y = random.randint(-100, 600)
@@ -115,17 +131,20 @@ while running:
             goose.caught(event.pos)
         elif event.type == honking:
             honk.play()
+    intro_text = ['Попаданий: ' + str(count), 'Время: ' + game_time(),
+                  'Уровень: ' + str(level)]
     fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
     text_coord = 10
-    string_rendered = font.render('Попаданий: ' + str(count), 1,
-                                  pygame.Color('white'))
-    intro_rect = string_rendered.get_rect()
-    intro_rect.top = text_coord
-    intro_rect.x = 10
-    text_coord += intro_rect.height
-    screen.blit(string_rendered, intro_rect)
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    level = count // 10 + 1
     clock.tick(FPS)
     all_sprites.draw(screen)
     pygame.display.flip()
