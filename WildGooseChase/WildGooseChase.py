@@ -31,7 +31,9 @@ class Goose(pygame.sprite.Sprite):
 
     def caught(self, coords):
         global count
+        global score
         if self.rect.collidepoint(coords):
+            score.play()
             count += 1
 
 
@@ -82,6 +84,7 @@ pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 100)
 pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
+score = pygame.mixer.Sound('data/score.wav')
 pygame.mixer.music.load('data/Music.mp3')
 pygame.mixer.music.play(-1)
 running = True
