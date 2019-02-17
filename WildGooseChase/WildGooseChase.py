@@ -81,7 +81,7 @@ FPS = 50
 clock = pygame.time.Clock()
 honk = pygame.mixer.Sound(os.path.join('data', 'Honk.wav'))
 pygame.time.set_timer(goose_move, 10)
-pygame.time.set_timer(new_coords, 100)
+pygame.time.set_timer(new_coords, 500)
 pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
@@ -104,11 +104,11 @@ while running:
                 goose.rect.x -= 5
                 goose.rect.y -= 5
             else:
-                new_x = random.randint(0, 800)
-                new_y = random.randint(0, 600)
+                new_x = random.randint(-100, 800)
+                new_y = random.randint(-100, 600)
         elif event.type == new_coords:
-            new_x = random.randint(0, 800)
-            new_y = random.randint(0, 600)
+            new_x = random.randint(-100, 800)
+            new_y = random.randint(-100, 600)
         elif event.type == pygame.MOUSEMOTION:
             cursor.movement(event.pos)
         elif event.type == pygame.MOUSEBUTTONDOWN:
