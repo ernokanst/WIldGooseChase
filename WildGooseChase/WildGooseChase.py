@@ -37,20 +37,19 @@ def terminate():
     sys.exit()
 
 
-def start_screen():
-    intro_text = ["Правила игры:", " ",
-                  "Кликайте сачком по гусю",
-                  "Каждые 10 попаданий гусь ускоряется",
-                  " ", "Для продолжения кликните мышью"]
+def teaser_screen():
+    intro_text = ["Привет, я – гусь!",
+                  "Хочешь попробовать поймать меня?",
+                  "Это не так-то просто, как кажется!", "Попробуешь?", " ",
+                  "Для продолжения кликни мышью!"]
 
-    fon = pygame.transform.scale(load_image('start.jpg'), (800, 600))
+    fon = pygame.transform.scale(load_image('teaser.jpg'), (800, 600))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
+    font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 33)
+    text_coord = 10
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
+        string_rendered = font.render(line, 1, pygame.Color('red'))
         intro_rect = string_rendered.get_rect()
-        text_coord += 10
         intro_rect.top = text_coord
         intro_rect.x = 10
         text_coord += intro_rect.height
@@ -61,7 +60,36 @@ def start_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+                return
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def start_screen():
+    intro_text = ["Правила игры:", " ",
+                  "Кликай сачком по гусю и набирай очки.", " ",
+                  "Через каждые 10 попаданий", "ты выходишь на новый уровень,",
+                  "и гусь ускоряется.",
+                  " ", "Для продолжения кликните мышью"]
+
+    fon = pygame.transform.scale(load_image('start.jpg'), (800, 600))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 10
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -137,6 +165,7 @@ pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
 levelup = pygame.mixer.Sound(os.path.join('data', 'LevelUp.wav'))
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
+teaser_screen()
 start_screen()
 startscreentime = pygame.time.get_ticks()
 pygame.mixer.music.play(-1)
