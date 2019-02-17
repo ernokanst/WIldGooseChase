@@ -41,7 +41,9 @@ def intro_screen():
     global goose
     global FPS
     global clock
-    intro_text = ["Wild Goose Chase", "Дмитрий Канский"]
+    intro_text = ["Wild Goose Chase", "Дмитрий Канский", " ", " ", " ", " ",
+                  " ", " ", " ", " ", " ", " ", " ", " ", " ",
+                  "Для продолжения кликни мышью"]
 
     while True:
         for event in pygame.event.get():
@@ -165,7 +167,8 @@ class Dialog_Goose(QWidget):
         i, okBtnPressed = QInputDialog.getItem(self, "Выбор гуся",
                                                "Выберите гуся",
                                                ("goose.png", "goose-2.png",
-                                                "goose-3.png"), 0, False)
+                                                "goose-3.png", 'goose-4.png'),
+                                               0, False)
         return i
 
 
