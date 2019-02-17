@@ -79,13 +79,13 @@ new_x = 0
 new_y = 0
 FPS = 50
 clock = pygame.time.Clock()
-honk = pygame.mixer.Sound('data/Honk.wav')
+honk = pygame.mixer.Sound(os.path.join('data', 'Honk.wav'))
 pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 100)
 pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
-score = pygame.mixer.Sound('data/score.wav')
-pygame.mixer.music.load('data/Music.mp3')
+score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
+pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
 pygame.mixer.music.play(-1)
 running = True
 while running:
@@ -117,7 +117,7 @@ while running:
             honk.play()
     fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font('data/PTMono.ttc', 30)
+    font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
     text_coord = 10
     string_rendered = font.render('Попаданий: ' + str(count), 1,
                                   pygame.Color('white'))
