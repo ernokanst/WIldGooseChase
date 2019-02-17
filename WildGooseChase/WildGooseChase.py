@@ -22,13 +22,48 @@ def load_image(name, colorkey=None):
 
 
 def game_time():
-    gametime = pygame.time.get_ticks()
+    global startscreentime
+    gametime = pygame.time.get_ticks() - startscreentime
     gametime = gametime // 1000
     minutes = str(gametime // 60)
     seconds = str(gametime % 60)
     if len(seconds) == 1:
         seconds = '0' + seconds
     return minutes + ':' + seconds
+
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def start_screen():
+    intro_text = ["Правила игры:", " ",
+                  "Кликайте сачком по гусю",
+                  "Каждые 10 попаданий гусь ускоряется",
+                  " ", "Для продолжения кликните мышью"]
+
+    fon = pygame.transform.scale(load_image('start.jpg'), (800, 600))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
 
 
 class Goose(pygame.sprite.Sprite):
@@ -102,6 +137,8 @@ pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
 levelup = pygame.mixer.Sound(os.path.join('data', 'LevelUp.wav'))
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
+start_screen()
+startscreentime = pygame.time.get_ticks()
 pygame.mixer.music.play(-1)
 running = True
 while running:
@@ -131,6 +168,8 @@ while running:
             goose.caught(event.pos)
         elif event.type == honking:
             honk.play()
+        elif event.type == pygame.QUIT:
+            terminate()
     intro_text = ['Попаданий: ' + str(count), 'Время: ' + game_time(),
                   'Уровень: ' + str(level)]
     fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
