@@ -45,10 +45,10 @@ class Goose(pygame.sprite.Sprite):
         global levelup
         if self.rect.collidepoint(coords):
             count += 1
-        if count % 10 != 0:
-            score.play()
-        else:
-            levelup.play()
+            if count % 10 != 0:
+                score.play()
+            else:
+                levelup.play()
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -100,7 +100,7 @@ pygame.time.set_timer(new_coords, 500)
 pygame.time.set_timer(honking, 10000)
 pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
-levelup = os.path.join('data', 'LevelUp.wav')
+levelup = pygame.mixer.Sound(os.path.join('data', 'LevelUp.wav'))
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
 pygame.mixer.music.play(-1)
 running = True
