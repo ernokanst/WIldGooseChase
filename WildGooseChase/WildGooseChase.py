@@ -55,7 +55,7 @@ def intro_screen():
         goose.rect.y += 10
         if goose.rect.x == 400:
             return
-        fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
+        fon = pygame.transform.scale(load_image(background), (800, 600))
         screen.blit(fon, (0, 0))
         font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 60)
         text_coord = 10
@@ -109,7 +109,7 @@ def start_screen():
 
     fon = pygame.transform.scale(load_image('start.jpg'), (800, 600))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 18)
     text_coord = 10
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('white'))
@@ -141,12 +141,15 @@ class Goose(pygame.sprite.Sprite):
         global count
         global score
         global levelup
+        global background
+        global backgrounds
         if self.rect.collidepoint(coords):
             count += 1
             if count % 10 != 0:
                 score.play()
             else:
                 levelup.play()
+                background = random.choice(backgrounds)
 
 
 class Cursor(pygame.sprite.Sprite):
@@ -177,6 +180,9 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     goose_image = Dialog_Goose()
     goose_image = goose_image.run()
+backgrounds = ['Grass.png', 'Sand.png', 'Sky.png', 'Beach.png', 'Village.png',
+               'Flowers.png', 'Land.png']
+background = 'Grass.png'
 pygame.init()
 size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
@@ -235,10 +241,11 @@ while running:
         elif event.type == honking:
             honk.play()
         elif event.type == pygame.QUIT:
+            running = False
             terminate()
     intro_text = ['Попаданий: ' + str(count), 'Время: ' + game_time(),
                   'Уровень: ' + str(level)]
-    fon = pygame.transform.scale(load_image('fon.png'), (800, 600))
+    fon = pygame.transform.scale(load_image(background), (800, 600))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
     text_coord = 10
