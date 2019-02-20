@@ -2,8 +2,6 @@ import os
 import pygame
 import random
 import sys
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
-from PyQt5.QtWidgets import QInputDialog
 
 
 def load_image(name, colorkey=None):
@@ -37,39 +35,45 @@ def terminate():
     sys.exit()
 
 
-def intro_screen():
-    global goose
-    global FPS
-    global clock
-    intro_text = ["Wild Goose Chase", "Дмитрий Канский", " ", " ", " ", " ",
-                  " ", " ", " ", " ", " ", " ", " ", " ", " ",
-                  "Для продолжения кликни мышью"]
+def goose_chooser():
+    intro_text = ["Выбери гуся для игры", "(кликни по нему мышью)"]
 
+    fon = pygame.transform.scale(load_image('Grass.png'), (800, 600))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
+    text_coord = 10
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    goose_choosing = pygame.sprite.Group()
+    global goose_image
+    global clock
+    goose_1 = Goose(goose_choosing, 'goose.png')
+    goose_2 = Goose(goose_choosing, 'goose-2.png')
+    goose_3 = Goose(goose_choosing, 'goose-3.png')
+    goose_4 = Goose(goose_choosing, 'goose-4.png')
+    goose_1.rect.topleft = (100, 200)
+    goose_2.rect.topleft = (600, 200)
+    goose_3.rect.topleft = (100, 400)
+    goose_4.rect.topleft = (600, 400)
+    chosed = False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                return
-        goose.rect.x += 10
-        goose.rect.y += 10
-        if goose.rect.x == 400:
-            return
-        fon = pygame.transform.scale(load_image(background), (800, 600))
-        screen.blit(fon, (0, 0))
-        font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 60)
-        text_coord = 10
-        for line in intro_text:
-            string_rendered = font.render(line, 1, pygame.Color('white'))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = text_coord
-            intro_rect.x = 10
-            text_coord += intro_rect.height
-            screen.blit(string_rendered, intro_rect)
-            font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 30)
-        all_sprites.draw(screen)
-        pygame.display.flip()
+                for bird in goose_choosing:
+                    chosed, goose_image = bird.chosen(event.pos)
+                    if chosed:
+                        return
         clock.tick(FPS)
+        goose_choosing.draw(screen)
+        pygame.display.flip()
 
 
 def teaser_screen():
@@ -133,6 +137,7 @@ class Goose(pygame.sprite.Sprite):
     def __init__(self, group, image):
         super().__init__(group)
         self.image = load_image(image)
+        self.image_file = image
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
@@ -151,6 +156,12 @@ class Goose(pygame.sprite.Sprite):
                 levelup.play()
                 background = random.choice(backgrounds)
 
+    def chosen(self, coords):
+        if self.rect.collidepoint(coords):
+            return True, self.image_file
+        else:
+            return False, 'goose.png'
+
 
 class Cursor(pygame.sprite.Sprite):
     def __init__(self, group):
@@ -162,24 +173,7 @@ class Cursor(pygame.sprite.Sprite):
         self.rect.topleft = coords
 
 
-class Dialog_Goose(QWidget):
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        i, okBtnPressed = QInputDialog.getItem(self, "Выбор гуся",
-                                               "Выберите гуся",
-                                               ("goose.png", "goose-2.png",
-                                                "goose-3.png", 'goose-4.png'),
-                                               0, False)
-        return i
-
-
 goose_image = 'goose.png'
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    goose_image = Dialog_Goose()
-    goose_image = goose_image.run()
 backgrounds = ['Grass.png', 'Sand.png', 'Sky.png', 'Beach.png', 'Village.png',
                'Flowers.png', 'Land.png']
 background = 'Grass.png'
@@ -187,8 +181,6 @@ pygame.init()
 size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
 screen.fill((255, 255, 255))
-all_sprites = pygame.sprite.Group()
-goose = Goose(all_sprites, goose_image)
 goose_move = 1
 new_coords = 2
 honking = 3
@@ -202,13 +194,15 @@ honk = pygame.mixer.Sound(os.path.join('data', 'Honk.wav'))
 pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 500)
 pygame.time.set_timer(honking, 10000)
-pygame.mouse.set_visible(False)
 score = pygame.mixer.Sound(os.path.join('data', 'score.wav'))
 levelup = pygame.mixer.Sound(os.path.join('data', 'LevelUp.wav'))
 pygame.mixer.music.load(os.path.join('data', 'Music.mp3'))
-intro_screen()
 teaser_screen()
 start_screen()
+goose_chooser()
+all_sprites = pygame.sprite.Group()
+goose = Goose(all_sprites, goose_image)
+pygame.mouse.set_visible(False)
 cursor = Cursor(all_sprites)
 startscreentime = pygame.time.get_ticks()
 pygame.mixer.music.play(-1)
