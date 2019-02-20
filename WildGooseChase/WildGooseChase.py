@@ -133,6 +133,46 @@ def start_screen():
         clock.tick(FPS)
 
 
+def end_goal():
+    pygame.mouse.set_visible(True)
+    global count
+    global background
+    global achieved
+    achieved.append(count)
+    intro_text = ["Ты поймал гуся " + str(count) + ' раз!',
+                  "Продолжить игру?"]
+
+    fon = pygame.transform.scale(load_image(background), (800, 600))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(os.path.join('data', 'PTMono.ttc'), 33)
+    text_coord = 10
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if pygame.Rect((150, 450), (100, 50)).collidepoint(event.pos):
+                    return
+                elif pygame.Rect((550, 450), (100, 50)).collidepoint(event.pos):
+                    terminate()
+        pygame.draw.rect(screen, (0, 255, 0), (150, 450, 100, 50))
+        pygame.draw.rect(screen, (255, 0, 0), (550, 450, 100, 50))
+        yes = font.render('Да!', 1, pygame.Color('black'))
+        no = font.render('Нет', 1, pygame.Color('black'))
+        screen.blit(yes, (175, 455, 100, 50))
+        screen.blit(no, (570, 455, 100, 50))
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 class Goose(pygame.sprite.Sprite):
     def __init__(self, group, image):
         super().__init__(group)
@@ -190,6 +230,7 @@ new_x = 0
 new_y = 0
 FPS = 50
 clock = pygame.time.Clock()
+achieved = []
 honk = pygame.mixer.Sound(os.path.join('data', 'Honk.wav'))
 pygame.time.set_timer(goose_move, 10)
 pygame.time.set_timer(new_coords, 500)
@@ -208,6 +249,7 @@ startscreentime = pygame.time.get_ticks()
 pygame.mixer.music.play(-1)
 running = True
 while running:
+    pygame.mouse.set_visible(False)
     for event in pygame.event.get():
         if event.type == goose_move:
             if new_x > goose.rect.x and new_y > goose.rect.y:
@@ -251,6 +293,8 @@ while running:
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     level = count // 10 + 1
+    if count % 100 == 0 and count != 0 and count not in achieved:
+        end_goal()
     clock.tick(FPS)
     all_sprites.draw(screen)
     pygame.display.flip()
