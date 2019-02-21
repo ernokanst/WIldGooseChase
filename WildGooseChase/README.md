@@ -1,2 +1,2 @@
-# WIldGooseChase
+# WIld Goose Chase
 Игра, где нужно ловить гуся сачком. Проект PyGame для Яндекс.Лицея
